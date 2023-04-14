@@ -1,0 +1,16 @@
+[swarm_managers]
+%{ for index, name in swarm_manager_names ~}
+${name} ansible_host=${swarm_manager_ips[index]}
+%{ endfor ~}
+
+[swarm_workers]
+%{ for index, name in swarm_worker_names ~}
+${name} ansible_host=${swarm_worker_ips[index]}
+%{ endfor ~}
+
+[swarm_nodes:children]
+swarm_managers
+swarm_workers
+
+[swarm_nodes:vars]
+ansible_user=ec2-user

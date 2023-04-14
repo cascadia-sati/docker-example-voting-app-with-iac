@@ -1,0 +1,18 @@
+---
+- name: Delete Example Voting App
+  hosts: groups['swarm_managers'][0]
+  become: false
+  tasks:
+
+    - name: Delete Example Voting App Stack
+      docker_stack:
+        name: example-voting-app
+        state: absent
+      tags:
+        - docker-stack
+
+- name: Delete Docker Swarm Cluster
+  hosts: swarm_nodes
+  become: false
+  roles:
+    - docker_swarm_delete

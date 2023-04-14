@@ -1,0 +1,2 @@
+local_compose_filepath: docker-stack.yml
+remote_compose_filepath: /tmp/{{ local_compose_filepath }}

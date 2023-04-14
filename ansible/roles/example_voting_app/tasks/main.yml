@@ -1,0 +1,16 @@
+---
+- name: Copy Example Voting App Stack Compose File
+  copy:
+    src: "{{ local_compose_filepath }}"
+    dest: "{{ remote_compose_filepath }}"
+  tags:
+    - example-voting-app
+
+- name: Deploy Example Voting App Stack
+  docker_stack:
+    name: example-voting-app
+    state: present
+    compose:
+      - "{{ remote_compose_filepath }}"
+  tags:
+    - example-voting-app

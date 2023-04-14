@@ -1,0 +1,17 @@
+---
+- name: Remove Swarm Worker Nodes
+  docker_swarm:
+    state: absent
+  when: "'swarm_workers' in group_names"
+  ignore_errors: true
+  tags:
+    - docker-swarm
+
+- name: Remove Swarm Manager Nodes
+  docker_swarm:
+    state: absent
+    force: true
+  when: "'swarm_managers' in group_names"
+  ignore_errors: true
+  tags:
+    - docker-swarm

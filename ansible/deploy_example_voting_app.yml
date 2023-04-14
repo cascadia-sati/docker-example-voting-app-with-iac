@@ -1,0 +1,21 @@
+---
+- name: Install Docker
+  hosts: swarm_nodes
+  become: true
+  become_user: root
+  any_errors_fatal: true
+  roles:
+    - docker
+
+- name: Create Docker Swarm Cluster
+  hosts: swarm_nodes
+  become: false
+  any_errors_fatal: true
+  roles:
+    - docker_swarm_create
+
+- name: Deploy Example Voting App
+  hosts: swarm_managers[0]
+  become: false
+  roles:
+    - example_voting_app

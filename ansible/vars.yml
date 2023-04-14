@@ -1,0 +1,2 @@
+swarm_managers_group: "swarm_managers"
+swarm_workers_group: "swarm_workers"

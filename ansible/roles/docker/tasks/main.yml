@@ -1,0 +1,76 @@
+---
+- name: Set Linux Distribution
+  set_fact:
+    linux_distro: "{{ 'fedora' if (ansible_distribution == 'Amazon') else (ansible_distribution | lower) }}"
+  tags:
+    - docker-install
+
+- name: Add Docker GPG RPM Key
+  rpm_key:
+    key: https://download.docker.com/linux/{{ linux_distro }}/gpg
+    state: present
+  tags:
+    - docker-install
+
+- name: Add Docker Yum Repo
+  yum_repository:
+    name: docker
+    description: docker repository
+    baseurl: "https://download.docker.com/linux/{{ linux_distro }}/$releasever/$basearch/stable"
+    enabled: true
+    gpgcheck: true
+    gpgkey: "https://download.docker.com/linux/{{ linux_distro }}/gpg"
+  tags:
+    - docker-install
+
+- name: Install Required Packages
+  yum:
+    name:
+      - docker
+    state: latest
+    update_cache: true
+  tags:
+    - docker-install
+
+- name: Start & Enable Docker Service
+  service:
+    name: docker
+    enabled: true
+    state: started
+  register: docker_service
+  until: docker_service.status.ActiveState == "active"
+  retries: 3
+  delay: 15
+  tags:
+    - docker-install
+
+- name: Install Python Pip
+  yum:
+    name:
+      - python-pip
+    state: latest
+    update_cache: true
+  tags:
+    - docker-install
+
+- name: Install Python Docker SDK
+  pip:
+    name:
+      - docker
+      - jsondiff
+  become: false
+  tags:
+    - docker-install
+
+- name: Add User to Docker Group
+  user:
+    name: "{{ ansible_user }}"
+    append: yes
+    groups: docker
+  tags:
+    - docker-install
+
+- name: Reset SSH connection to pick up new group membership
+  meta: reset_connection
+  tags:
+    - docker-install
