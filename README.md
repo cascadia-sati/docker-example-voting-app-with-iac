@@ -12,7 +12,7 @@ Follow these steps to provision the necessary AWS resources, create the Docker S
 
 1. Ensure AWS config and credentials are properly configured in _~/.aws/config_ and _~/.aws/credentials_ by running:  
    `$ aws configure`
-1. Make sure you have SSH keys available (default: _~/.ssh/id_rsa[.pub]_). If not, generate them with the following command:
+1. Make sure you have SSH keys available. If not, generate them with the command below. Unless you set the `SSH_PRV_KEY` and `SSH_PUB_KEY` env vars, these keys will be assumed to be in _~/.ssh/id_rsa[.pub]_.  
    `$ ssh-keygen`
 1. Optionally set the following env vars so you can directly copy and paste the commands in the remaining steps:
    - `$SSH_PRV_KEY`: The path to your private SSH key
@@ -38,7 +38,7 @@ Follow these steps to provision the necessary AWS resources, create the Docker S
 
 ### Deleting the App
 
-These steps will destroy the Example Voting App, the Docker Swarm cluste, as well as the AWS resources:
+These steps will destroy the Example Voting App, the Docker Swarm cluster, as well as the AWS resources:
 
 1. Run the following command from the _./ansible_ directory:  
    `$ ansible-playbook -i hosts.cfg --private-key $SSH_PRV_KEY destroy_example_voting_app.yml`
@@ -53,8 +53,6 @@ The following assumptions about the configurations in this project must hold for
 
 - Ansible playbooks assume the inventory file places the Swarm manager nodes in a group called `swarm_managers` and the worker nodes in a group called `swarm_workers`. In Terraform this is done in the inventory template file _./terraform/templates/hosts.tftpl_ and for Ansible in the variables file _./ansible/vars.yml_.
 
-- An SSH key must be available in _./ssh/id_rsa_, as defined by the `swarm_ssh_public_key_file` Terraform var in _./terraform/variables.tf_ and is satisfied via step 2. in the deployment instructions.
-
 ## Future Enhancements
 
 - Add TLS security to the app
@@ -67,7 +65,7 @@ The following assumptions about the configurations in this project must hold for
 
 ## Lessons Learned
 
-- As stated on Terraform's [security_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) documentation page (search "NOTE on Egress rules"), the normal default allow-all egress rule isn't created when Terraform creates security groups. This has to be explicitly added so that the instances can access the public Internet, which is necessary for them to install the Docker YUM and PIP packages.
+- As stated on Terraform's [security_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) documentation page (search "NOTE on Egress rules"), the normal default allow-all egress rule isn't created when Terraform creates security groups. This has to be explicitly added so that the instances can access the public Internet, which is necessary for them to install the Docker YUM and PIP packages. The default ingress rule that allows traffic between instances within security group also isn't created. It either needs to be created, or per-port rules must be added. The latter was chosen for better security.
 
 - To create ingress or egress rules that reference the security group that they're atttached to, you can either use the `self = true` keyword in the rule or use separate `aws_security_group_rule` resources. The latter is useful to reduce redundancy when using the same rule across multiple security groups, but be careful to know which security groups are effected when changing such rules.
 
