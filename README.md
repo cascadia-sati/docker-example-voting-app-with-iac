@@ -1,4 +1,4 @@
-# Docker Example Voting App With IaC
+# Example Voting App on Docker Swarm
 
 This is a simple project that uses Terraform and Ansible to deploy [Docker's Example Voting App](https://github.com/dockersamples/example-voting-app) to a Docker Swarm running on EC2 instances.
 
@@ -59,9 +59,7 @@ The following assumptions about the configurations in this project must hold for
 
 - Save Terraform state in a remote backend
 
-- Add an AWS Elastic Load Balancer (ELB) in front of the Docker Swarm worker nodes
-
-- Add support for deploying the Example Voting App to Kubernetes
+- Add an AWS Elastic Load Balancer (ELB) in front of the Docker Swarm workers
 
 ## Lessons Learned
 
